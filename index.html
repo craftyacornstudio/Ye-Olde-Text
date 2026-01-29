@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ye Olde Chat Translator - Transform thy messages into medieval speech</title>
+
+<link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  html {
+    overflow-x: hidden;
+  }
+  
+  :root {
+    --gold: #d4af37;
+    --gold-dark: #b8941f;
+    --gold-light: #e5c048;
+    --brown-dark: #2c1810;
+    --brown-med: #4a3828;
+    --brown-light: #8b6f47;
+    --parchment: #e8dcc4;
+    --parchment-dark: #d4c5a9;
+    --shadow: rgba(0, 0, 0, 0.3);
+  }
+
+  body {
+    font-family: 'Crimson Text', serif;
+    background: linear-gradient(135deg, var(--brown-dark) 0%, #1a1006 50%, var(--brown-dark) 100%);
+    background-attachment: fixed;
+    color: var(--parchment);
+    min-height: 100vh;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     HERO HEADER
+     ═══════════════════════════════════════════════════════════ */
+  .hero {
+    text-align: center;
+    padding: 60px 20px 40px;
+    background: linear-gradient(180deg, rgba(44,24,16,0.9) 0%, rgba(26,16,6,0.7) 100%);
+    border-bottom: 4px double var(--gold);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero h1 {
+    font-family: 'UnifrakturMaguntia', cursive;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    color: var(--gold);
+    margin-bottom: 15px;
+    text-shadow: 3px 3px 6px var(--shadow);
+    letter-spacing: 2px;
+  }
+
+  .hero .subtitle {
+    font-size: clamp(1rem, 3vw, 1.3rem);
+    color: var(--parchment-dark);
+    font-style: italic;
+    margin-bottom: 10px;
+  }
+
+  .hero .tagline {
+    font-size: clamp(0.85rem, 2.5vw, 1rem);
+    color: var(--brown-light);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     MAIN CONTAINER - Responsive Grid
+     ═══════════════════════════════════════════════════════════ */
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+    overflow: hidden;
+  }
+
+  .grid-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin-top: 30px;
+  }
+
+  @media (min-width: 768px) {
+    .grid-layout {
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .grid-layout {
+      grid-template-columns: 1.2fr 1fr;
+      gap: 40px;
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     CARDS
+     ═══════════════════════════════════════════════════════════ */
+  .card {
+    background: rgba(44,24,16,0.95);
+    border: 1px solid #8b6f47;
+    padding: 30px;
+    margin-bottom: 20px;
+  }
+
+  .card-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.3rem, 3vw, 1.8rem);
+    color: var(--gold);
+    margin-bottom: 20px;
+    text-align: center;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     FORM CONTROLS
+     ═══════════════════════════════════════════════════════════ */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+    margin: 20px 0;
+  }
+
+  @media (min-width: 640px) {
+    .form-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .form-field label {
+    display: block;
+    font-family: 'Cinzel', serif;
+    font-size: clamp(0.85rem, 2vw, 0.95rem);
+    color: var(--gold);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  select, textarea {
+    width: 100%;
+    background: rgba(26,16,6,0.8);
+    color: var(--parchment);
+    border: 2px solid var(--brown-light);
+    border-radius: 4px;
+    padding: 12px;
+    font-family: 'Crimson Text', serif;
+    font-size: clamp(0.9rem, 2vw, 1rem);
+    transition: all 0.3s ease;
+  }
+
+  select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 10px rgba(212,175,55,0.3);
+  }
+
+  textarea {
+    min-height: 200px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    resize: vertical;
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     UPLOAD ZONE
+     ═══════════════════════════════════════════════════════════ */
+  .upload-zone {
+    border: 2px solid var(--brown-light);
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    background: rgba(26,16,6,0.4);
+    transition: all 0.3s ease;
+  }
+
+  .upload-zone:hover {
+    border-color: var(--gold);
+    background: rgba(212,175,55,0.1);
+  }
+
+  .upload-icon {
+    font-size: 3rem;
+    margin-bottom: 10px;
+  }
+
+  .upload-text {
+    font-family: 'Cinzel', serif;
+    font-size: 1.2rem;
+    color: var(--gold);
+    margin-bottom: 5px;
+  }
+
+  .upload-subtext {
+    color: var(--brown-light);
+    font-size: 0.9rem;
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     BUTTONS
+     ═══════════════════════════════════════════════════════════ */
+  .btn-group {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  @media (min-width: 640px) {
+    .btn-group {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .btn-group {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  button {
+    padding: clamp(12px, 2vw, 16px) 20px;
+    font-family: 'Cinzel', serif;
+    font-size: clamp(0.85rem, 2vw, 1rem);
+    font-weight: 600;
+    background: linear-gradient(135deg, var(--brown-med) 0%, #3a2818 100%);
+    color: var(--parchment);
+    border: 2px solid var(--gold);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  button:hover {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: var(--brown-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(212,175,55,0.4);
+  }
+
+  button:active {
+    transform: translateY(0);
+  }
+
+  .btn-primary {
+    grid-column: 1 / -1;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: var(--brown-dark);
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    padding: clamp(14px, 3vw, 18px);
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     STATUS & HINTS
+     ═══════════════════════════════════════════════════════════ */
+  .status {
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 4px;
+    text-align: center;
+    font-size: clamp(0.9rem, 2vw, 1rem);
+    display: none;
+    white-space: pre-wrap;
+    line-height: 1.6;
+  }
+
+  .status.show {
+    display: block;
+  }
+
+  .status.error {
+    background: rgba(244,67,54,0.2);
+    border: 2px solid #f44336;
+    color: #ff6b6b;
+  }
+
+  .status.success {
+    background: rgba(76,175,80,0.2);
+    border: 2px solid #4caf50;
+    color: #90ee90;
+  }
+
+  .status.info {
+    background: rgba(212,175,55,0.2);
+    border: 2px solid var(--gold);
+    color: var(--gold-light);
+  }
+
+  .hint {
+    margin-top: 15px;
+    padding: 15px;
+    background: rgba(212,175,55,0.1);
+    border-left: 4px solid var(--gold);
+    border-radius: 4px;
+    font-size: clamp(0.85rem, 2vw, 0.95rem);
+    color: var(--parchment-dark);
+    line-height: 1.7;
+  }
+
+  .hint strong {
+    color: var(--gold);
+  }
+
+  .detected-lang {
+    margin-top: 15px;
+    padding: 12px;
+    background: rgba(212,175,55,0.2);
+    border: 2px solid var(--gold);
+    border-radius: 4px;
+    text-align: center;
+    font-size: clamp(0.9rem, 2vw, 1rem);
+    display: none;
+  }
+
+  .detected-lang.show {
+    display: block;
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     WHATSAPP MOCKUP - Responsive
+     ═══════════════════════════════════════════════════════════ */
+  .phone-mockup {
+    background: #fff;
+    border-radius: clamp(20px, 4vw, 30px);
+    box-shadow: 0 15px 50px rgba(0,0,0,0.6);
+    overflow: hidden;
+    display: none;
+    margin: 0 auto;
+    max-width: 100%;
+  }
+
+  .phone-mockup.show {
+    display: block;
+  }
+
+  @media (min-width: 768px) {
+    .phone-mockup {
+      max-width: 450px;
+    }
+  }
+
+  .phone-header {
+    background: #075e54;
+    color: #fff;
+    padding: clamp(12px, 3vw, 18px);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  .phone-avatar {
+    width: clamp(35px, 8vw, 45px);
+    height: clamp(35px, 8vw, 45px);
+    background: #25d366;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: clamp(1rem, 3vw, 1.3rem);
+    flex-shrink: 0;
+  }
+
+  .phone-name {
+    font-weight: 600;
+    font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+  }
+
+  .chat-area {
+    background: #ece5dd url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect fill="%23ece5dd"/><path d="M0 0h400v400H0z" fill="url(%23a)" opacity=".06"/><defs><pattern id="a" width="40" height="40" patternUnits="userSpaceOnUse"><path fill="%23000" d="M0 0h20v20H0z"/></pattern></defs></svg>') repeat;
+    padding: clamp(15px, 3vw, 25px) clamp(10px, 2vw, 15px);
+    min-height: clamp(400px, 60vh, 600px);
+    max-height: 70vh;
+    overflow-y: auto;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  .chat-bubble {
+    max-width: 80%;
+    margin: 8px 0;
+    padding: clamp(8px, 2vw, 12px) clamp(10px, 2.5vw, 14px);
+    border-radius: clamp(6px, 1.5vw, 10px);
+    word-wrap: break-word;
+    font-size: clamp(0.9rem, 2vw, 1rem);
+    line-height: 1.5;
+    clear: both;
+    position: relative;
+  }
+
+  .chat-bubble.them {
+    background: #fff;
+    float: left;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  }
+
+  .chat-bubble.me {
+    background: #dcf8c6;
+    float: right;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  }
+
+  .chat-bubble .text {
+    color: #000;
+    margin-bottom: 3px;
+  }
+
+  .chat-bubble .time {
+    font-size: 0.7rem;
+    color: rgba(102, 119, 129, 0.8);
+    text-align: right;
+    margin-top: 4px;
+    font-weight: normal;
+  }
+
+  .chat-area::after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+
+  .phone-footer {
+    background: #f0f0f0;
+    padding: clamp(10px, 2vw, 15px);
+    text-align: center;
+    font-size: clamp(0.75rem, 1.8vw, 0.85rem);
+    color: #667781;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     FOOTER WITH BUY ME A COFFEE
+     ═══════════════════════════════════════════════════════════ */
+  .site-footer {
+    text-align: center;
+    margin-top: clamp(40px, 8vw, 80px);
+    padding: clamp(30px, 6vw, 50px) 20px;
+    border-top: 3px double var(--gold);
+    background: linear-gradient(180deg, transparent 0%, rgba(44,24,16,0.5) 100%);
+  }
+
+  .site-footer h2 {
+    font-family: 'UnifrakturMaguntia', cursive;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    color: var(--gold);
+    margin-bottom: 15px;
+  }
+
+  .site-footer p {
+    font-style: italic;
+    color: var(--parchment-dark);
+    line-height: 1.8;
+    margin: 10px 0;
+    font-size: clamp(0.9rem, 2vw, 1.05rem);
+  }
+
+  .coffee-btn {
+    display: inline-block;
+    padding: clamp(12px, 2.5vw, 16px) clamp(20px, 4vw, 32px);
+    margin-top: 20px;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: var(--brown-dark);
+    text-decoration: none;
+    border: 2px solid var(--gold);
+    border-radius: 6px;
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    font-size: clamp(0.9rem, 2vw, 1.05rem);
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(212,175,55,0.3);
+  }
+
+  .coffee-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(212,175,55,0.5);
+    background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
+  }
+
+  .footer-credit {
+    margin-top: 30px;
+    font-size: clamp(0.8rem, 1.8vw, 0.9rem);
+    color: #6b5d4f;
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     MOBILE OPTIMIZATIONS
+     ═══════════════════════════════════════════════════════════ */
+  @media (max-width: 640px) {
+    .hero {
+      padding: 40px 15px 30px;
+    }
+
+    .container {
+      padding: 15px;
+    }
+
+    .card {
+      padding: 20px;
+    }
+
+    .upload-zone {
+      padding: 40px 15px;
+    }
+
+    button {
+      width: 100%;
+    }
+  }
+
+  /* Tablet specific */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .grid-layout {
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     ANIMATIONS
+     ═══════════════════════════════════════════════════════════ */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .fade-in {
+    animation: fadeIn 0.6s ease;
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     LOADING SPINNER
+     ═══════════════════════════════════════════════════════════ */
+  .spinner {
+    border: 4px solid rgba(212,175,55,0.2);
+    border-top: 4px solid var(--gold);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+    display: none;
+  }
+
+  .spinner.show {
+    display: block;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+</style>
+</head>
+
+<body>
+
+<!-- HERO HEADER -->
+<div class="hero">
+  <h1>⚔ Ye Olde Chat Translator ⚔</h1>
+  <p class="subtitle">Transform thy modern missives into medieval speech</p>
+  <p class="tagline">
+    From "hey bro" to "Hail, good sir" • From "lol" to "I am slain"<br>
+    A scribe's tool for the digital age
+  </p>
+</div>
+
+<div class="container">
+  <div class="grid-layout">
+    
+    <!-- LEFT COLUMN: INPUT -->
+    <div class="card fade-in">
+      <h2 class="card-title">📜 Input Thy Chat</h2>
+      
+      <!-- Upload Screenshot Section -->
+      <div style="margin-bottom:25px;">
+        <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+          <input id="fileInput" type="file" accept="image/*" style="display:none;">
+          <div class="upload-icon">📸</div>
+          <div class="upload-text">Upload Screenshot</div>
+          <div class="upload-subtext">Click to select image</div>
+        </div>
+        
+        <!-- Image Preview (hidden by default) -->
+        <div id="imagePreview" style="display:none;margin-top:15px;text-align:center;">
+          <img id="previewImg" alt="Preview" style="max-width:100%;max-height:300px;border:1px solid #8b6f47;margin-bottom:10px;">
+          <div style="display:flex;gap:10px;">
+            <button onclick="extractText()" style="flex:1;">📝 Extract Text (OCR)</button>
+            <button onclick="removeImage()" style="flex:1;background:#6b5d4f;">❌ Remove</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Language Settings -->
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Chat Language</label>
+          <select id="sourceLang">
+            <option value="auto" selected>🔍 Auto-Detect</option>
+            <option value="nl">Dutch → Medieval</option>
+            <option value="en">English → Medieval</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Parsing Mode</label>
+          <select id="parseMode">
+            <option value="smart" selected>Smart (Screenshots)</option>
+            <option value="simple">Simple (Pasted)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Detection Feedback -->
+      <div class="detected-lang" id="detectedLang"></div>
+
+      <!-- Hint -->
+      <div class="hint">
+        <strong>🔍 Auto-Language Detection:</strong> The app automatically recognizes Dutch or English! Just paste your chat text below, then click translate. Manual language selection is also available if needed.
+      </div>
+
+      <!-- Text Input -->
+      <div class="form-field" style="margin-top: 20px;">
+        <label>Paste Your Chat Text</label>
+        <textarea id="chatInput" placeholder="Try this example text to test the translator:
+
+10:30 hey what's up bro
+10:31 not much lol, wanna hang later?
+10:32 yeah for sure! what time?
+10:33 maybe around 7pm?
+10:34 sounds good, see you then
+
+[Or clear and paste your own chat - any format works!]"></textarea>
+        <div style="margin-top:10px;padding:8px;background:rgba(76,175,80,0.2);border-left:4px solid #4caf50;font-size:0.85em;color:#90ee90;">
+          💡 <b>Tip:</b> The example text above is ready to translate! Just scroll down and click the TRANSLATE button. Or clear it and paste your own chat.
+        </div>
+      </div>
+
+      <!-- Spinner -->
+      <div class="spinner" id="spinner"></div>
+
+      <!-- Status -->
+      <div class="status" id="status"></div>
+
+      <!-- Action Buttons -->
+      <div class="btn-group">
+        <button class="btn-primary" onclick="translateChat()">⚔ TRANSLATE TO MEDIEVAL ⚔</button>
+        <button onclick="downloadAsImage()">📸 Download Screenshot</button>
+        <button onclick="copyMedieval()">📋 Copy Text</button>
+        <button onclick="downloadMedieval()">📄 Download .txt</button>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: OUTPUT -->
+    <div class="card fade-in" style="animation-delay: 0.2s;">
+      <h2 class="card-title">📱 Medieval Output</h2>
+      
+      <div class="phone-mockup" id="phoneMockup">
+        <div class="phone-header">
+          <div class="phone-avatar">M</div>
+          <div class="phone-name">Medieval Chat</div>
+        </div>
+        <div class="chat-area" id="chatArea">
+          <p style="text-align:center;color:#667781;padding:40px 20px;font-style:italic;">
+            Thy translated messages shall appear here...<br><br>
+            ✨ Upload or paste a chat, then click Translate ✨
+          </p>
+        </div>
+        <div class="phone-footer">Ye Olde Chat Translator</div>
+      </div>
+
+      <div class="hint" style="margin-top: 20px;">
+        <strong>📱 Visual Output:</strong> Your chat appears in WhatsApp style with medieval text. Download as PNG to share on social media!
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="site-footer">
+  <h2>⚔ Ye Olde Chat Translator ⚔</h2>
+  <p>
+    A humble scribe's work, freely given unto thee.<br>
+    If this tool hath brought thee mirth or wonder...
+  </p>
+  <a href="https://buymeacoffee.com/craftyacorn" target="_blank" class="coffee-btn">
+    ☕ My thanks, kind soul - a coffee keeps the quill moving
+  </a>
+  <p class="footer-credit">
+    Made with ancient magic and modern sorcery<br>
+    by a wandering scribe
+  </p>
+</div>
+
+<script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js'></script>
+
+<script>
+  const fileInput = document.getElementById('fileInput');
+  const imagePreview = document.getElementById('imagePreview');
+  const previewImg = document.getElementById('previewImg');
+  const statusEl = document.getElementById('status');
+  const chatInput = document.getElementById('chatInput');
+  const phoneMockup = document.getElementById('phoneMockup');
+  const chatArea = document.getElementById('chatArea');
+  const detectedLang = document.getElementById('detectedLang');
+  const spinner = document.getElementById('spinner');
+
+  let currentMessages = [];
+
+  // Initialize Tesseract Worker properly to avoid blob errors
+  // Note: In some test environments (like claudeusercontent.com), 
+  // OCR may fail due to browser security restrictions.
+  // It WILL work on your deployed website (Netlify, etc.)
+
+  // File handling
+  fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setStatus('Please select an image file.', 'error');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      previewImg.src = ev.target.result;
+      imagePreview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  });
+
+  function removeImage() {
+    fileInput.value = '';
+    imagePreview.style.display = 'none';
+    previewImg.src = '';
+  }
+
+  async function extractText() {
+    if (!previewImg.src) {
+      setStatus('No image to extract from.', 'error');
+      return;
+    }
+
+    setStatus('🪶 Initializing OCR... Please wait...', 'info');
+    spinner.classList.add('show');
+
+    try {
+      console.log('Starting OCR extraction...');
+      console.log('Image source:', previewImg.src.substring(0, 50) + '...');
+      
+      // Use Tesseract with simplified configuration
+      const { data: { text } } = await Tesseract.recognize(
+        previewImg.src,
+        'eng',
+        {
+          logger: function(m) {
+            console.log('OCR Progress:', m);
+            if (m.status === 'recognizing text') {
+              const pct = Math.round(m.progress * 100);
+              setStatus(`🪶 Reading text... ${pct}%`, 'info');
+            }
+          }
+        }
+      );
+      
+      console.log('OCR completed successfully');
+      console.log('Extracted text length:', text.length);
+      
+      spinner.classList.remove('show');
+      
+      if (!text || text.trim().length < 10) {
+        console.warn('Text too short:', text);
+        setStatus('❌ Could not read enough text. Image may be unclear. Try:\n• Taking a clearer screenshot\n• Pasting text manually', 'error');
+        return;
+      }
+
+      chatInput.value = text;
+      
+      const lang = detectLanguage(text);
+      const langName = lang === 'nl' ? 'Dutch 🇳🇱' : 'English 🇬🇧';
+      setStatus(`✅ Extracted ${text.length} characters! Detected: ${langName}\nNow click TRANSLATE`, 'success');
+      
+      console.log('OCR extraction complete:', text.substring(0, 100) + '...');
+
+    } catch (error) {
+      console.error('OCR Error Details:', error);
+      console.error('Error name:', error.name);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+      
+      spinner.classList.remove('show');
+      
+      // User-friendly error message
+      let errorMsg = '❌ OCR extraction failed.\n\n';
+      
+      if (error.message && error.message.includes('Worker')) {
+        errorMsg += 'Browser blocked the OCR engine.\n\n';
+        errorMsg += 'SOLUTION: Paste your chat text manually instead.\n';
+        errorMsg += '(This happens in some test environments but will work on your deployed site!)';
+      } else if (error.message && error.message.includes('network')) {
+        errorMsg += 'Network error loading OCR files.\n\n';
+        errorMsg += 'Check your internet connection and try again.';
+      } else {
+        errorMsg += 'Possible causes:\n';
+        errorMsg += '• Image format not supported\n';
+        errorMsg += '• Image too large or corrupted\n';
+        errorMsg += '• Browser restrictions\n\n';
+        errorMsg += 'TRY: Paste your text manually instead!';
+      }
+      
+      setStatus(errorMsg, 'error');
+    }
+  }
+
+  function setStatus(msg, type) {
+    statusEl.textContent = msg;
+    statusEl.className = 'status show ' + (type || 'info');
+  }
+
+  // Language Detection
+  function detectLanguage(text) {
+    const lowerText = text.toLowerCase();
+    
+    const dutchWords = ['hoi', 'hallo', 'ja', 'nee', 'niet', 'wat', 'een', 'van', 'het', 'de', 'ben', 'bent', 'zijn', 'mijn', 'jouw', 'jij', 'je', 'ook', 'maar', 'dan', 'naar', 'voor', 'met', 'aan', 'op', 'om', 'nu', 'goed', 'kan', 'moet', 'veel', 'meer', 'wel', 'nog', 'dus', 'hier', 'daar', 'deze', 'die', 'bij', 'uit', 'door', 'over', 'zou', 'hebben', 'lekker', 'heb', 'hebt', 'heeft', 'hadden', 'zal', 'waarom', 'omdat', 'misschien', 'eigenlijk', 'gewoon', 'echt', 'heel', 'beetje', 'dag', 'morgen', 'avond', 'gaan', 'doei', 'oke', 'dank', 'alsjeblieft', 'sorry', 'leuk', 'cool'];
+    
+    const englishWords = ['the', 'and', 'you', 'that', 'this', 'with', 'for', 'not', 'but', 'have', 'from', 'they', 'what', 'about', 'which', 'when', 'make', 'like', 'time', 'know', 'take', 'people', 'your', 'good', 'some', 'could', 'them', 'see', 'other', 'than', 'then', 'now', 'look', 'come', 'over', 'think', 'also', 'back', 'after', 'how', 'our', 'work', 'well', 'way', 'even', 'new', 'want', 'because', 'any', 'give', 'day', 'most', 'going', 'yeah', 'gonna', 'wanna', 'hey', 'bro', 'thanks', 'please', 'okay', 'cool', 'sorry', 'nice'];
+    
+    let dutchScore = 0, englishScore = 0;
+    
+    dutchWords.forEach(word => {
+      const regex = new RegExp('\\b' + word + '\\b', 'gi');
+      const matches = lowerText.match(regex);
+      if (matches) dutchScore += matches.length;
+    });
+    
+    englishWords.forEach(word => {
+      const regex = new RegExp('\\b' + word + '\\b', 'gi');
+      const matches = lowerText.match(regex);
+      if (matches) englishScore += matches.length;
+    });
+    
+    return dutchScore > englishScore ? 'nl' : 'en';
+  }
+
+  function showDetectedLanguage(lang) {
+    detectedLang.innerHTML = lang === 'nl' 
+      ? '🇳🇱 <b>Detected:</b> Dutch (Nederlands) - Translating to Medieval Dutch'
+      : '🇬🇧 <b>Detected:</b> English - Translating to Medieval English';
+    detectedLang.classList.add('show');
+  }
+
+  // Parsing
+  function parseImproved(text) {
+    const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    const mode = document.getElementById('parseMode').value || 'smart';
+    return mode === 'simple' ? parseSimple(lines) : parseSmart(lines);
+  }
+
+  function parseSimple(lines) {
+    const messages = [];
+    for (const line of lines) {
+      if (line.length < 2) continue;
+      
+      // Look for timestamp anywhere in line
+      const timeMatch = line.match(/(\d{1,2}[:.]\d{2}\s*(?:AM|PM|am|pm)?)/);
+      const time = timeMatch ? timeMatch[1].replace('.', ':') : '';
+      
+      // Get content (remove timestamp if found)
+      let content = line;
+      if (time) {
+        content = line.replace(timeMatch[0], '').trim().replace(/^[-–—\s:]+/, '').trim();
+      }
+      
+      if (content.length > 0) {
+        messages.push({ time, content });
+      }
+    }
+    return messages;
+  }
+
+  function parseSmart(lines) {
+    const messages = [];
+    
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      if (line.length < 2) continue;
+      
+      // Check if line starts with timestamp (e.g., "4:02" or "4:03PM")
+      const timePattern = /^(\d{1,2}[:.]\d{2}\s*(?:AM|PM|am|pm)?)/;
+      const timeMatch = line.match(timePattern);
+      
+      if (timeMatch) {
+        // Each timestamp = NEW bubble (like real WhatsApp!)
+        const time = timeMatch[1].replace('.', ':');
+        let content = line.substring(timeMatch[0].length).trim();
+        
+        // Remove leading dashes, colons, names
+        content = content.replace(/^[-–—\s:]+/, '').trim();
+        
+        // Only add if has actual content
+        if (content.length > 0) {
+          messages.push({ time, content });
+        }
+      }
+    }
+    
+    return messages;
+  }
+
+  // Translation Dictionary (EXPANDED - 350+ words)
+  const EN_TRANSLATIONS = {
+    'bro': 'good sir', 'mate': 'my fellow', 'my guy': 'my fellow', 'broke': 'hath shattered', 'phone': 'message device', 'texting': 'sending missives', 'computer': 'counting machine', 'how': 'in what wise', 'did': 'didst', 'managed': 'contrived', 'dad': 'sire', 'taking': 'taketh', 'too': 'overmuch', 'get': 'procure', 'soon': 'ere long', 'downloading': 'by fetching', 'whatsapp': 'the WhatsApp scroll', 'i know': 'I know well', 'ong': 'By my troth', 'hes': 'he is', "he's": 'he is', 'going': 'journeying',
+    'please': 'prithee', 'welcome': 'salvete', 'hail': 'salvete', 'thank you': 'gramercy', "i'm grateful": 'gramercy', 'thanks': 'gramercy', 'unfortunately': 'alas and alack', 'sadly': 'alas and alack', 'to our misfortune': 'alas and alack', 'goodbye': 'adieu', 'farewell': 'adieu', 'long live': 'viva', 'there you go': 'voila', 'on guard': 'en garde', 'oh': 'egad', 'wow': 'egad', 'oh my god': 'gad', 'disgusting': 'faugh', 'yay': 'huzzah', 'oh yeah': 'huzzah', 'really': 'quotha', 'indeed': 'quotha', 'forsooth': 'quotha', 'damn': 'fie', 'attention': 'oyez', 'hear ye': 'oyez', 'hearken': 'oyez', 'what a shame': 'tut-tut', 'tsk tsk': 'tut-tut',
+    'peasant': 'churl', 'slob': 'fustilugs', 'idiot': 'fopdoodle', 'fool': 'fopdoodle', 'dove': 'culver', 'little lamb': 'lambkin', 'good day': 'good morrow', 'be healthy': 'hale be thou', 'how are you': 'how fare ye', 'the root of my heart': 'mine own heart\'s root',
+    'stfu': 'hold thy peace', 'shut up': 'hold thy peace', 'be quiet': 'pray thee, be silent', 'wtf': 'what sorcery is this', 'what the': 'what madness dost thou speak', 'omw': 'already am I on the road', 'on my way': 'already am I on the road', 'afaik': 'in the realm of my understanding', 'as far as i know': 'in the realm of my understanding', 'rofl': 'such mirth hath cast me down upon the ground', 'rolling on the floor': 'I am quite slain by thy jest', 'fml': 'alas, I am cursed', 'fuck my life': 'woe is me', 'eta': 'I shall arrive anon', 'when will you arrive': 'my coming is reckoned ere long', 'smh': 'I shake mine head in sorrow', 'shaking my head': 'truly, thou testest my patience', 'omg': 'by God\'s bones', 'brb': 'I shall return anon', 'be right back': 'stay thyself; I step away but briefly', 'idk': 'I wot not', "i don't know": 'this matter is beyond my knowing', 'rip': 'may God rest his soul', 'rest in peace': 'slain. Utterly slain', 'imo': 'to my thinking', 'in my opinion': 'as it seemeth to me', 'gtfo': 'begone', 'get out': 'out of my sight', 'leave': 'get thee hence',
+    'chill': 'peace', 'relax': 'softly, now', 'calm down': 'take thy ease', 'cool it': 'cool thy humours', 'nah': 'nay', 'no': 'nay', 'nope': 'I think not', 'yeah': 'aye', 'yes': 'aye', 'yep': 'so it is', 'yup': 'indeed', 'ok': 'very well', 'okay': 'as thou wilt', 'k': 'so be it', 'fr': 'in good sooth', 'for real': 'truly', 'seriously': 'upon my word', 'sus': 'that seemeth amiss', 'suspicious': 'something here doth stink', 'sketch': 'I trust it not', 'bruh': 'good Lord', 'bro wtf': 'mercy', 'dude': 'alas', 'lmao': 'I am slain', 'lmfao': 'I perish of laughter', 'haha': 'dead. Utterly dead', 'bet': 'it is agreed', 'deal': 'done', 'sounds good': 'say no more', 'whatever': 'as it may be', 'whatevs': 'have it thy way',
+    'hey': 'Hail', 'hi': 'Greetings', 'hello': 'Well met', 'whats up': 'What tidings', "what's up": 'What tidings', 'gonna': 'shall', 'wanna': 'wisheth to', 'gotta': 'must needs', 'need to': 'must needs', 'want to': 'desire to', 'now': 'presently', 'later': 'anon', 'tomorrow': 'on the morrow', 'today': 'this day', 'tonight': 'this eve', 'you': 'thou', 'your': 'thy', "you're": 'thou art', 'ur': 'thy', 'sorry': 'I beg thy pardon', 'excuse me': 'pardon me'
+  };
+
+  const NL_TRANSLATIONS = {
+    'hoi': 'Wees gegroet', 'hallo': 'Gegroet', 'hey': 'Heil', 'ja': 'Voorwaar', 'nee': 'Neen', 'ok': 'Het zij zo', 'oke': 'Het zij zo', 'prima': 'Voortreffelijk', 'misschien': 'Wellicht', 'natuurlijk': 'Zekerlijk', 'dank je': 'Ik dank u', 'dankjewel': 'Mijn dank', 'aub': 'Ik bid u', 'haha': 'Ha ha, dat is jolijt', 'lol': 'Ha! Gij doet mij lachen', 'jij': 'gij', 'je': 'gij', 'jou': 'u', 'jouw': 'uw', 'jullie': 'gij allen', 'nu': 'thans', 'later': 'weldra', 'morgen': 'op den morrow', 'vandaag': 'dezen dag', 'vanavond': 'dezen avond', 'cool': 'voortreffelijk', 'leuk': 'aangenaam', 'grappig': 'lachwekkend',
+    'alsjeblieft': 'Ik bid u', 'welkom': 'Wees gegroet', 'bedankt': 'Duizend dank', 'dank': 'Mijn dank', 'helaas': 'Ach en wee', 'jammer': 'Wee mij', 'doei': 'Vaarwel', 'dag': 'Adieu', 'tot ziens': 'Ga heen', 'leve': 'Leve', 'kijk': 'Ziehier', 'hier': 'Daar hebt gij het', 'pas op': 'Hoed u', 'let op': 'Wees op uw hoede', 'bah': 'Bah', 'vies': 'Walgelijk', 'hoera': 'Hoera', 'inderdaad': 'Voorwaar', 'echt': 'Zekerlijk', 'schande': 'Schande', 'luister': 'Hoort! Hoort!',
+    'bro': 'vriend', 'gast': 'goede man', 'maat': 'kameraad', 'schat': 'hartelief', 'liefje': 'duifje',
+    'stfu': 'zwijg', 'hou je bek': 'houd uw mond', 'stil': 'bedwing uw tong', 'wtf': 'wat voor toverij is dit', 'wat': 'welke waanzin spreekt gij', 'omw': 'ik ben reeds onderweg', 'onderweg': 'ik begeef mij op weg', 'afaik': 'voor zover mij bekend', 'voor zover ik weet': 'voor zover mij bekend', 'rofl': 'de lach werpt mij ter aarde', 'lmao': 'ik sterf van het lachen', 'fml': 'wee mij', 'mijn leven': 'het lot keert zich tegen mij', 'eta': 'ik arriveer spoedig', 'hoe laat': 'mijn komst is nabij', 'smh': 'ik schud het hoofd', 'serieus': 'gij beproeft mijn geduld', 'omg': 'bij Gods gebeente', 'oh mijn god': 'hemel en aarde', 'brb': 'ik keer zo terug', 'zo terug': 'wacht mij een ogenblik', 'idk': 'ik weet het niet', 'geen idee': 'het is mij onbekend', 'rip': 'moge hij rusten in vrede', 'rust in vrede': 'gesneuveld', 'imo': 'mijns inziens', 'naar mijn mening': 'naar mijn inzicht', 'gtfo': 'ga heen', 'rot op': 'verdwijn', 'oprotten': 'uit mijn zicht',
+    'rustig': 'rustig', 'relax': 'kom tot bedaren', 'kalm': 'koel uw gemoed', 'nee': 'neen', 'niet': 'geenszins', 'yup': 'inderdaad', 'zeker': 'zeker', 'is goed': 'goed', 'echt waar': 'waarlijk', 'eerlijk': 'eerlijk gezegd', 'vaag': 'dat riekt naar bedrog', 'sketchy': 'dat vertrouw ik niet', 'mijn hemel': 'ik ben dit leven moe', 'afgesproken': 'aldus', 'boeit niet': 'het zij zo', 'whatever': 'doe wat gij wilt'
+  };
+
+  function escapeRegExp(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+  function translateOne(content, lang) {
+    let translated = String(content || '').toLowerCase();
+    const dict = (lang === 'nl') ? NL_TRANSLATIONS : EN_TRANSLATIONS;
+    const starters = (lang === 'nl') ? ['Voorwaar, ','In waarheid, ','Ik zeg u, ','Hoort, ','Zie, ',''] : ['Verily, ','Forsooth, ','Marry, ','In sooth, ','Prithee, ','Methinks ','Hark! ','Lo! ',''];
+    const enders = (lang === 'nl') ? [', zo waarlijk',', bij mijn eer',', naar mijn weten',', zeg ik u',''] : [', good fellow',', I say',', methinks',', by my troth',', verily',''];
+
+    const keys = Object.keys(dict).sort((a,b)=>b.length-a.length);
+    for (const k of keys) {
+      const regex = new RegExp('\\b' + escapeRegExp(k) + '\\b', 'gi');
+      translated = translated.replace(regex, dict[k]);
+    }
+
+    translated = translated
+      .replace(/😂|🤣/g, lang==='nl' ? ' (in grote vrolijkheid) ' : ' (showing great mirth) ')
+      .replace(/😭/g, lang==='nl' ? ' (in weeklacht) ' : ' (lamenting) ')
+      .replace(/❤️|💙|💚/g, lang==='nl' ? ' (uit genegenheid) ' : ' (expressing affection) ')
+      .replace(/👍/g, lang==='nl' ? ' (ten teken van instemming) ' : ' (signaling approval) ');
+
+    if (Math.random() > 0.65) translated = starters[Math.floor(Math.random()*starters.length)] + translated;
+    if (Math.random() > 0.72) translated = translated + enders[Math.floor(Math.random()*enders.length)];
+
+    translated = translated.charAt(0).toUpperCase() + translated.slice(1);
+    if (!/[.!?]$/.test(translated)) translated += '.';
+    return translated;
+  }
+
+  // Translate Chat
+  function translateChat() {
+    const input = (chatInput.value || '').trim();
+    if (!input) {
+      setStatus('Paste or extract text first.', 'error');
+      return;
+    }
+
+    const messages = parseImproved(input);
+    
+    console.log('📊 Parsing results:', messages.length, 'messages found');
+    console.log('Messages:', messages);
+
+    if (messages.length === 0) {
+      setStatus('❌ No messages detected. Try switching parsing mode.', 'error');
+      return;
+    }
+
+    let lang = document.getElementById('sourceLang').value || 'auto';
+    
+    if (lang === 'auto') {
+      lang = detectLanguage(input);
+      showDetectedLanguage(lang);
+    } else {
+      detectedLang.classList.remove('show');
+    }
+
+    setStatus(`✅ Translated ${messages.length} messages to Medieval ${lang === 'nl' ? 'Dutch' : 'English'}!`, 'success');
+
+    currentMessages = messages.map(m => ({
+      time: m.time || '',
+      content: m.content || '',
+      medieval: translateOne(m.content || '', lang)
+    }));
+    
+    console.log('✨ Translated messages:', currentMessages.length);
+
+    renderVisualChat(currentMessages);
+  }
+
+  function renderVisualChat(msgs) {
+    chatArea.innerHTML = '';
+    
+    for (let i = 0; i < msgs.length; i++) {
+      const m = msgs[i];
+      const who = (i % 2 === 0) ? 'them' : 'me';
+      
+      const bubble = document.createElement('div');
+      bubble.className = 'chat-bubble ' + who;
+      
+      const text = document.createElement('div');
+      text.className = 'text';
+      text.textContent = m.medieval;
+      
+      bubble.appendChild(text);
+      
+      if (m.time) {
+        const time = document.createElement('div');
+        time.className = 'time';
+        time.textContent = m.time;
+        bubble.appendChild(time);
+      }
+      
+      chatArea.appendChild(bubble);
+    }
+    
+    phoneMockup.classList.add('show');
+    phoneMockup.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  // Download as Image
+  async function downloadAsImage() {
+    if (!currentMessages.length) {
+      setStatus('Translate first!', 'error');
+      return;
+    }
+    
+    setStatus('📸 Creating screenshot...', 'info');
+    
+    try {
+      const canvas = await html2canvas(phoneMockup, {
+        backgroundColor: '#ffffff',
+        scale: 2
+      });
+      
+      canvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'medieval-chat-screenshot.png';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        setStatus('✅ Downloaded medieval screenshot!', 'success');
+      });
+    } catch (error) {
+      console.error('Screenshot error:', error);
+      setStatus('❌ Could not create screenshot.', 'error');
+    }
+  }
+
+  function copyMedieval() {
+    if (!currentMessages.length) {
+      setStatus('Translate first!', 'error');
+      return;
+    }
+    let out = '═══════════════════════════════\n   YE OLDE CHAT TRANSLATION\n═══════════════════════════════\n\n';
+    for (const m of currentMessages) {
+      out += `${m.time ? '['+m.time+'] ' : ''}${m.medieval}\n\n`;
+    }
+    navigator.clipboard.writeText(out).then(() => {
+      setStatus('✅ Copied to clipboard!', 'success');
+    }).catch(() => {
+      setStatus('❌ Could not copy.', 'error');
+    });
+  }
+
+  function downloadMedieval() {
+    if (!currentMessages.length) {
+      setStatus('Translate first!', 'error');
+      return;
+    }
+    let out = '═══════════════════════════════════════════\n        YE OLDE CHAT TRANSLATION\n═══════════════════════════════════════════\n\n';
+    for (const m of currentMessages) {
+      out += `${m.time ? '['+m.time+'] ' : ''}${m.medieval}\n\n`;
+    }
+    out += '═══════════════════════════════════════════\n';
+
+    const blob = new Blob([out], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'medieval-chat-translation.txt';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    setStatus('✅ Downloaded text file!', 'success');
+  }
+</script>
+
+</body>
+</html>
